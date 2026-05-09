@@ -30,13 +30,12 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun DetailScreen(
-    id: Int,
+    id: String,
     onNavigateBack: () -> Unit
 ) {
     var album by remember { mutableStateOf<Album?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Consumo de API para el Detalle
     LaunchedEffect(id) {
         try {
             val response = withContext(Dispatchers.IO) {
@@ -44,13 +43,11 @@ fun DetailScreen(
             }
             album = response
         } catch (e: Exception) {
-            // Manejar error (puedes imprimir en log)
         } finally {
             isLoading = false
         }
     }
 
-    // Fondo general lavanda
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF0E6FF))) {
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF7B42F6))
@@ -58,9 +55,8 @@ fun DetailScreen(
             album?.let { currentAlbum ->
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 100.dp) // Espacio para el MiniPlayer flotante
+                    contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
-                    // Header con Imagen Completa y Scrim (Degradado)
                     item {
                         Box(modifier = Modifier.fillMaxWidth().height(380.dp)) {
                             AsyncImage(
@@ -81,7 +77,6 @@ fun DetailScreen(
                                     )
                             )
 
-                            // Top Bar (Flecha de regreso y corazón)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -96,7 +91,6 @@ fun DetailScreen(
                                 }
                             }
 
-                            // Título, Artista y Botones inferiores del Header
                             Column(
                                 modifier = Modifier
                                     .align(Alignment.BottomStart)
@@ -115,7 +109,7 @@ fun DetailScreen(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    // Play Morado
+
                                     IconButton(
                                         onClick = { },
                                         modifier = Modifier.background(Color(0xFF7B42F6), CircleShape).size(56.dp)
@@ -134,7 +128,6 @@ fun DetailScreen(
                         }
                     }
 
-                    // Card "About this album"
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -144,7 +137,6 @@ fun DetailScreen(
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text("About this album", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF2A2A2A))
                                 Spacer(modifier = Modifier.height(8.dp))
-                                // Si la API no trae descripción, ponemos una por defecto como en el mock
                                 Text(
                                     text = currentAlbum.description ?: "Un álbum sinfónico que mezcla elementos de música clásica con death metal melódico.",
                                     color = Color.Gray,
@@ -154,7 +146,6 @@ fun DetailScreen(
                         }
                     }
 
-                    // Chip de Artista
                     item {
                         Surface(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -170,10 +161,8 @@ fun DetailScreen(
                         }
                     }
 
-                    // Espacio
                     item { Spacer(modifier = Modifier.height(8.dp)) }
 
-                    // Lista de 10 canciones ficticias (Requisito de rúbrica)
                     items(10) { index ->
                         TrackItem(album = currentAlbum, trackNumber = index + 1)
                     }

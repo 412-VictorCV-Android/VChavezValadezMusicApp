@@ -10,8 +10,9 @@ interface MusicApiService {
     @GET("api/albums")
     suspend fun getAlbums(): List<Album>
 
+    // ¡AQUÍ ESTÁ EL CAMBIO! Pasamos de Int a String
     @GET("api/albums/{id}")
-    suspend fun getAlbumById(@Path("id") id: Int): Album
+    suspend fun getAlbumById(@Path("id") id: String): Album
 }
 
 object RetrofitClient {

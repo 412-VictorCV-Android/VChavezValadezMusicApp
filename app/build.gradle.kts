@@ -5,15 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.examenparcial_musicapp"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    namespace = "com.example.vchavezvaladezmusicapp"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.examenparcial_musicapp"
+        applicationId = "com.example.vchavezvaladezmusicapp"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

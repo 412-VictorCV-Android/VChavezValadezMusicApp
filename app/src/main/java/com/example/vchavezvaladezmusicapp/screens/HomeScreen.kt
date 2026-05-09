@@ -1,5 +1,6 @@
 package com.example.vchavezvaladezmusicapp.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,7 +33,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreen(
-    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToDetail: (String) -> Unit,
     onAlbumSelected: (Album) -> Unit
 ) {
     var albums by remember { mutableStateOf<List<Album>>(emptyList()) }
@@ -45,6 +46,8 @@ fun HomeScreen(
             }
             albums = response
         } catch (e: Exception) {
+            Log.e("API_ERROR", "Fallo al descargar: ${e.message}")
+            e.printStackTrace()
         } finally {
             isLoading = false
         }

@@ -7,27 +7,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import coil.ImageLoader
-import coil.compose.LocalImageLoader
 import com.example.vchavezvaladezmusicapp.components.MiniPlayer
 import com.example.vchavezvaladezmusicapp.models.Album
 import com.example.vchavezvaladezmusicapp.screens.DetailScreen
 import com.example.vchavezvaladezmusicapp.screens.HomeScreen
 import kotlinx.serialization.Serializable
 import com.example.vchavezvaladezmusicapp.ui.theme.VChavezValadezMusicAppTheme
-import okhttp3.OkHttpClient
 
 @Serializable
 object HomeRoute
@@ -39,62 +34,42 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val context = LocalContext.current
-            
-            val imageLoader = remember {
-                ImageLoader.Builder(context)
-                    .okHttpClient {
-                        OkHttpClient.Builder()
-                            .addInterceptor { chain ->
-                                val request = chain.request().newBuilder()
-                                    .header("User-Agent", "VChavezValadezMusicApp/1.0")
-                                    .build()
-                                chain.proceed(request)
-                            }
-                            .build()
-                    }
-                    .crossfade(true)
-                    .build()
-            }
+            VChavezValadezMusicAppTheme {
+                val navController = rememberNavController()
+                var currentPlayingAlbum by remember { mutableStateOf<Album?>(null) }
 
-            CompositionLocalProvider(LocalImageLoader provides imageLoader) {
-                VChavezValadezMusicAppTheme {
-                    val navController = rememberNavController()
-                    var currentPlayingAlbum by remember { mutableStateOf<Album?>(null) }
-
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                            NavHost(
-                                navController = navController,
-                                startDestination = HomeRoute
-                            ) {
-                                composable<HomeRoute> {
-                                    HomeScreen(
-                                        onNavigateToDetail = { id ->
-                                            navController.navigate(DetailRoute(id = id))
-                                        },
-                                        onAlbumSelected = { album ->
-                                            currentPlayingAlbum = album
-                                        }
-                                    )
-                                }
-
-                                composable<DetailRoute> { backStackEntry ->
-                                    val detailRoute: DetailRoute = backStackEntry.toRoute()
-                                    DetailScreen(
-                                        id = detailRoute.id,
-                                        onNavigateBack = {
-                                            navController.popBackStack()
-                                        }
-                                    )
-                                }
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = HomeRoute
+                        ) {
+                            composable<HomeRoute> {
+                                HomeScreen(
+                                    onNavigateToDetail = { id ->
+                                        navController.navigate(DetailRoute(id = id))
+                                    },
+                                    onAlbumSelected = { album ->
+                                        currentPlayingAlbum = album
+                                    }
+                                )
                             }
 
-                            MiniPlayer(
-                                album = currentPlayingAlbum,
-                                modifier = Modifier.align(Alignment.BottomCenter)
-                            )
+                            composable<DetailRoute> { backStackEntry ->
+                                val detailRoute: DetailRoute = backStackEntry.toRoute()
+                                DetailScreen(
+                                    id = detailRoute.id,
+                                    onNavigateBack = {
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
                         }
+
+                        MiniPlayer(
+                            album = currentPlayingAlbum,
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        )
                     }
                 }
             }

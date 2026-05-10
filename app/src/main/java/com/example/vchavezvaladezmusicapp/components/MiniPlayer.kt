@@ -18,7 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.vchavezvaladezmusicapp.models.Album
 
 @Composable
@@ -37,7 +39,11 @@ fun MiniPlayer(album: Album?, modifier: Modifier = Modifier) {
     ) {
         // Imagen del álbum con Coil
         AsyncImage(
-            model = album.image,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(album.image)
+                .crossfade(true)
+                .setHeader("User-Agent", "Mozilla/5.0")
+                .build(),
             contentDescription = "Album Cover",
             modifier = Modifier
                 .size(48.dp)

@@ -1,5 +1,5 @@
 package com.example.vchavezvaladezmusicapp.screens
-
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.vchavezvaladezmusicapp.models.Album
 import com.example.vchavezvaladezmusicapp.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +62,11 @@ fun DetailScreen(
                     item {
                         Box(modifier = Modifier.fillMaxWidth().height(380.dp)) {
                             AsyncImage(
-                                model = currentAlbum.image,
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(currentAlbum.image)
+                                    .crossfade(true)
+                                    .setHeader("User-Agent", "Mozilla/5.0")
+                                    .build(),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -184,7 +190,11 @@ fun TrackItem(album: Album, trackNumber: Int) {
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = album.image,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(album.image)
+                    .crossfade(true)
+                    .setHeader("User-Agent", "Mozilla/5.0")
+                    .build(),
                 contentDescription = null,
                 modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
             )

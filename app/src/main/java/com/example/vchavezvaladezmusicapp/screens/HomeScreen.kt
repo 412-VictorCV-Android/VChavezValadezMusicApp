@@ -25,7 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.vchavezvaladezmusicapp.models.Album
 import com.example.vchavezvaladezmusicapp.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
@@ -139,10 +141,19 @@ fun AlbumLargeCard(album: Album, onClick: () -> Unit) {
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
-                model = album.image,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(album.image)
+                    .crossfade(true)
+                    .setHeader("User-Agent", "Mozilla/5.0") // Wikimedia a veces bloquea peticiones sin User-Agent
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onState = { state ->
+                    if (state is coil.compose.AsyncImagePainter.State.Error) {
+                        Log.e("COIL_ERROR", "Error cargando imagen de ${album.title}: ${state.result.throwable}")
+                    }
+                }
             )
             Box(
                 modifier = Modifier
@@ -182,7 +193,11 @@ fun RecentlyPlayedCard(album: Album, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = album.image,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(album.image)
+                    .crossfade(true)
+                    .setHeader("User-Agent", "Mozilla/5.0")
+                    .build(),
                 contentDescription = null,
                 modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
             )
